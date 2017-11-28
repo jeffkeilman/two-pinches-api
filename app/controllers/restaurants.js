@@ -36,7 +36,7 @@ const show = (req, res) => {
 
 const create = (req, res, next) => {
   if (req.user.admin) {
-    const restaurant = Object.assign(req.body.restaurant, {
+    const restaurant = Object.assign(req.body, {
       _owner: req.user._id
     })
     Restaurant.create(restaurant)
@@ -53,9 +53,9 @@ const create = (req, res, next) => {
 
 const update = (req, res, next) => {
   if (req.user.admin) {
-    delete req.body.restaurant._owner  // disallow owner reassignment.
+    delete req.body._owner  // disallow owner reassignment.
 
-    req.restaurant.update(req.body.restaurant)
+    req.restaurant.update(req.body)
       .then(() => res.sendStatus(204))
       .catch(next)
   } else {
