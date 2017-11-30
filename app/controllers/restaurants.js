@@ -74,63 +74,44 @@ const destroy = (req, res, next) => {
 }
 
 const editComment = (req, res, next) => {
-  if (req.body.text && req.body.userId && req.body._id) {
-    Restaurant.findOne({
-      _id: req.params.id
-    })
-      .then(restaurant => {
-        const editComment = restaurant.comments.findIndex(comment => {
-          return comment._id === req.body._id
-        })
-        restaurant.comments[editComment].text = req.body.text
-        return restaurant.save()
-      })
-      .then(() => {
-        res.sendStatus(204)
-      })
-      .catch(next)
+  if (req.body.text && req.body.user && req.body._id) {
+    const comment = req.restaurant.comments.findIndex(comment => comment._id === req.body._id)
+    if (req.restaurant.comments[comment].user === req.user.email) {
+      req.restaurant.comments.splice(comment, 1, req.body)
+      req.restaurant.save()
+      res.json({ comment: req.restaurant.comments[comment] })
+    } else {
+      res.sendStatus(401)
+    }
   } else {
     res.sendStatus(400)
   }
 }
 
 const removeComment = (req, res, next) => {
-  if (req.body.text && req.body.userId && req.body._id) {
-    Restaurant.findOne({
-      _id: req.params.id
-    })
-      .then(restaurant => {
-        const delComment = restaurant.comments.findIndex(comment => {
-          return comment._id === req.body._id
-        })
-        restaurant.comments.splice(delComment, 1)
-        return restaurant.save()
-      })
-      .then(() => {
-        res.sendStatus(204)
-      })
-      .catch(next)
+  if (req.body.text && req.body.user && req.body._id) {
+    const comment = req.restaurant.comments.findIndex(comment => comment._id === req.body._id)
+    if (req.body.user === req.restaurant.comments[comment].user) {
+      req.restaurant.comments.splice(comment, 1)
+      req.restaurant.save()
+      res.sendStatus(204)
+    } else {
+      res.sendStatus(401)
+    }
   } else {
     res.sendStatus(400)
   }
 }
 
 const addComment = (req, res, next) => {
-  if (req.body.text && req.body.userId) {
-    Restaurant.findOne({
-      _id: req.params.id
+  if (req.body.text) {
+    const comment = Object.assign(req.body, {
+      user: req.user.email,
+      _id: shortid.generate()
     })
-      .then(restaurant => {
-        const comment = Object.assign(req.body, {
-          _id: shortid.generate()
-        })
-        restaurant.comments.push(comment)
-        return restaurant.save()
-      })
-      .then(restaurant => {
-        res.json({ comments: restaurant.comments })
-      })
-      .catch(next)
+    req.restaurant.comments.push(comment)
+    req.restaurant.save()
+    res.json({ comment })
   } else {
     res.sendStatus(400)
   }
@@ -148,6 +129,6 @@ module.exports = controller({
 }, { before: [
   { method: setUser },
   { method: authenticate, except: ['index', 'show', 'create'] },
-  { method: setModel(Restaurant), only: ['show'] },
+  { method: setModel(Restaurant), only: ['show', 'addComment', 'removeComment', 'editComment'] },
   { method: setModel(Restaurant, { forUser: true }), only: ['update', 'destroy'] }
 ] })

@@ -14,9 +14,9 @@ module.exports = require('lib/wiring/routes')
 .resources('restaurants')
 
 // special routes for CRUDing comments
-.patch('/add-comment/:id', 'restuarants#addComment')
-.patch('/remove-comment/:id', 'restuarants#removeComment')
-.patch('/edit-comment/:id', 'restuarants#editComment')
+.patch('/add-comment/:id', 'restaurants#addComment')
+.patch('/remove-comment/:id', 'restaurants#removeComment')
+.patch('/edit-comment/:id', 'restaurants#editComment')
 
 // users of the app have special requirements
 .post('/sign-up', 'users#signup')
