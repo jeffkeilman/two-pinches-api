@@ -24,9 +24,6 @@ up changing some components of the app as I saw fit.
 ## ERD
 https://drive.google.com/file/d/1x0vZZFbvzqDZ2eNe7xFf0yIOitOQvhne/view?usp=sharing
 
-## App
-![Image of Two Pinches Site](https://i.imgur.com/dZ1ZXD8.jpg?1)
-
 ## Installation
 Be sure to run `npm install` before attempting to deploy this API locally.
 
